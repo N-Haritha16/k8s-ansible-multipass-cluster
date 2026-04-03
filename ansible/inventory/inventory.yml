@@ -1,0 +1,15 @@
+all:
+  vars:
+    ansible_user: ubuntu
+    ansible_ssh_private_key_file: ~/.ssh/id_rsa   # adjust if needed
+  children:
+    control_plane:
+      hosts:
+        k8s-control-plane:
+          ansible_host: 192.168.64.10            # replace with multipass IP
+    workers:
+      hosts:
+        k8s-worker-1:
+          ansible_host: 192.168.64.11
+        k8s-worker-2:
+          ansible_host: 192.168.64.12

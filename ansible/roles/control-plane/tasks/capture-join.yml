@@ -1,0 +1,9 @@
+---
+- name: Generate fresh join command
+  command: kubeadm token create --print-join-command
+  register: join_cmd
+  changed_when: false
+
+- name: Set join command fact
+  set_fact:
+    kubeadm_join_command: "{{ join_cmd.stdout }}"

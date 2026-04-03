@@ -1,0 +1,12 @@
+---
+- name: Patch deployment to use new image tag
+  command: >
+    kubectl set image deployment/web-app web-server={{ app_image_base }}:{{ app_image_new_tag }}
+    -n {{ app_namespace }}
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+- name: Wait for rollout to complete
+  command: kubectl rollout status deployment/web-app -n {{ app_namespace }} --timeout=300s
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf

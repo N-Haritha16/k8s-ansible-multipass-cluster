@@ -1,0 +1,30 @@
+---
+- name: Check if control plane is already initialized
+  stat:
+    path: "{{ kubeconfig_path }}"
+  register: kubeadm_config
+
+- name: Initialize control plane with kubeadm
+  command: >
+    kubeadm init
+    --pod-network-cidr={{ pod_network_cidr }}
+    --kubernetes-version={{ k8s_version | regex_replace('-00$', '') }}
+  when: not kubeadm_config.stat.exists
+
+- name: Create .kube directory
+  file:
+    path: /home/{{ ansible_user }}/.kube
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+  when: kubeadm_config.stat.exists
+
+- name: Copy admin.conf to user kubeconfig
+  copy:
+    src: "{{ kubeconfig_path }}"
+    dest: "/home/{{ ansible_user }}/.kube/config"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+  when: kubeadm_config.stat.exists

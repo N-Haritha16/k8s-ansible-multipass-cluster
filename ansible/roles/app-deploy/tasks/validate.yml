@@ -1,0 +1,15 @@
+---
+- name: Get worker node IP
+  command: kubectl get nodes -o jsonpath='{.items[1].status.addresses[0].address}'
+  register: worker_ip
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+- name: Check application via NodePort
+  uri:
+    url: "http://{{ worker_ip.stdout }}:{{ node_port }}/"
+    status_code: 200
+  register: app_check
+  retries: 10
+  delay: 10
+  until: app_check.status == 200

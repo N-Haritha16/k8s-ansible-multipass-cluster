@@ -1,0 +1,25 @@
+---
+- name: Prepare deployment manifest with correct image
+  template:
+    src: deployment.yml.j2
+    dest: /tmp/web-app-deployment.yml
+
+- name: Apply deployment
+  command: kubectl apply -f /tmp/web-app-deployment.yml
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+- name: Apply service
+  copy:
+    src: service.yml
+    dest: /tmp/web-app-service.yml
+
+- name: Apply service manifest
+  command: kubectl apply -f /tmp/web-app-service.yml
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+- name: Wait for pods to be running
+  command: kubectl rollout status deployment/web-app -n {{ app_namespace }} --timeout=300s
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf

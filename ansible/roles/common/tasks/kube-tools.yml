@@ -1,0 +1,51 @@
+---
+- name: Install containerd prerequisites
+  apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+    state: present
+    update_cache: yes
+
+- name: Install containerd
+  apt:
+    name: containerd
+    state: present
+  notify: restart containerd
+
+- name: Configure containerd default config
+  command: containerd config default >/etc/containerd/config.toml
+  args:
+    creates: /etc/containerd/config.toml
+
+- name: Restart containerd to apply config
+  service:
+    name: containerd
+    state: restarted
+    enabled: yes
+
+- name: Add Kubernetes apt key
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+
+- name: Add Kubernetes apt repository
+  apt_repository:
+    repo: "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+    state: present
+    filename: kubernetes
+
+- name: Install kubeadm, kubelet, kubectl
+  apt:
+    name:
+      - "kubelet={{ k8s_version }}"
+      - "kubeadm={{ k8s_version }}"
+      - "kubectl={{ k8s_version }}"
+    state: present
+    update_cache: yes
+
+- name: Hold Kubernetes packages
+  command: "apt-mark hold kubelet kubeadm kubectl"
+  changed_when: false

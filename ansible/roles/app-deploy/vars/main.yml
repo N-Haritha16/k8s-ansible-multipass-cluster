@@ -1,0 +1,6 @@
+app_name: web-app
+app_namespace: default
+app_image_base: "{{ lookup('env', 'DOCKERHUB_USER') | default('myusername', true) }}/k8s-flask-app"
+app_image_tag: "v1.0.0"
+app_image_new_tag: "v1.0.1"
+node_port: 30007

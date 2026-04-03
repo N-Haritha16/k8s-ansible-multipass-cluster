@@ -1,0 +1,30 @@
+---
+- name: Prepare all nodes
+  hosts: control_plane,workers
+  become: yes
+  roles:
+    - role: common
+
+- name: Initialize control plane and capture join command
+  hosts: control_plane
+  become: yes
+  roles:
+    - role: control-plane
+
+- name: Join worker nodes
+  hosts: workers
+  become: yes
+  roles:
+    - role: workers
+
+- name: Install CNI plugin
+  hosts: control_plane
+  become: yes
+  roles:
+    - role: cni
+
+- name: Deploy application and validate
+  hosts: control_plane
+  become: yes
+  roles:
+    - role: app-deploy

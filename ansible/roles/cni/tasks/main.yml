@@ -1,0 +1,15 @@
+---
+- name: Ensure /etc/k8s directory exists
+  file:
+    path: /etc/k8s
+    state: directory
+
+- name: Copy CNI manifest to node
+  copy:
+    src: cni.yaml
+    dest: /etc/k8s/cni.yaml
+
+- name: Apply CNI manifest
+  command: kubectl apply -f /etc/k8s/cni.yaml
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf

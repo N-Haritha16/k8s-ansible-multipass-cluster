@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  ansible-controller:
+    build:
+      context: .
+      dockerfile: Dockerfile.ansible
+    container_name: ansible-controller
+    privileged: true
+    volumes:
+      - ./ansible:/ansible
+      - ./provision_vms.sh:/provision_vms.sh
+      - ~/.ssh:/root/.ssh:ro
+    environment:
+      - K8S_VERSION=${K8S_VERSION}
+      - DOCKERHUB_USER=${DOCKERHUB_USER}
+    working_dir: /ansible

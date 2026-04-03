@@ -1,0 +1,5 @@
+# Calico manifest placeholder
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: calico-system
